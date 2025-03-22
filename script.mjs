@@ -1,30 +1,29 @@
 
 const topKInput = document.getElementById('topk');
 const temperatureInput = document.getElementById('temperature');
+const promptSelect = document.getElementById('prompt');
 
-
-const vocabulary = [
-    ' blue',
-    ' purple',
-    ' violet',
-    ' not',
-    ' vio',
-    ' green',
-    ' Blue',
-    ' gray',
-    ' grey',
-];
-
-const LOGITS = [
-    23.5,
-    19,
-    17.875,
-    17.75,
-    17.5,
-    17.375,
-    17.25,
-    16.75,
-    16.375,
+const DATA = [
+    {
+        vocabulary: [' blue', ' purple', ' violet', ' vio', ' not', ' Blue', ' green', ' gray', ' grey', ' black'],	
+        logits: [23.625, 19.125, 18, 17.625, 17.625, 17.375, 17.375, 16.75, 16.375, 16.375,]
+    },
+    {
+        vocabulary: [' little', ' girl', ' young', ' man', ' boy', ' beautiful', ' small', ' king', ' woman', ' princess'],
+        logits: [20, 19.375, 19.375, 19.25, 18.875, 18.5, 18.375, 18.125, 18, 17.75]
+    },
+    {
+        vocabulary: [' dog', ' dogs', ' lazy', ' brown', ' cat', ' old', ',', ' puppy', '', ' snake',],
+        logits: [23.375, 18.375, 18.125, 18, 17.375, 17.375, 17, 17, 16.625, 16.5]
+    },
+    {
+        vocabulary: [' howling', ' blowing', ' whipping', ' whistling', ' roaring', ' strong', ' gust', ' picking', ' raging', ' screaming'],
+        logits: [22.625, 21.625, 19.875, 19, 18.625, 18.625, 18.5, 18, 17.75, 17.5]
+    },
+    {
+        vocabulary: [' blooming', ' in', ' blossoming', ' out', ' bursting', ' everywhere', ' bright', ' budding', ' all', ' starting',],
+        logits: [22, 21.125, 18.625, 17.875, 17.5, 17.375, 17.125, 17, 16.75, 16.625,]
+    },    
 ];
 
 const barDivs = [];
@@ -32,9 +31,10 @@ const labelDivs = [];
 
 topKInput.addEventListener('change', updateBars);
 temperatureInput.addEventListener('change', updateBars);
+promptSelect.addEventListener('change', updateBars);
 
 const container = document.getElementById('container');
-for (let item of vocabulary) {
+for (let item of DATA[0].vocabulary) {
     const barContainer = document.createElement('div');
     barContainer.classList.add('bar-container');
     const barWrapper = document.createElement('div');
@@ -56,7 +56,9 @@ for (let item of vocabulary) {
 updateBars()
 
 function updateBars() {
-    const logits = [...LOGITS];
+    const index = promptSelect.selectedIndex;
+    const vocabulary = DATA[index].vocabulary;
+    const logits = [...DATA[index].logits];
     const topk = Number.parseInt(topKInput.value);
     const temperature = Number.parseFloat(temperatureInput.value);
 
@@ -70,7 +72,6 @@ function updateBars() {
         }
     })
     const probabilities = softmaxWithTemperature(filteredLogits, temperature);
-    console.log(probabilities);
     for (let i = 0; i < probabilities.length; i++) {
         if (filteredLogits[i] === Number.NEGATIVE_INFINITY) {
             labelDivs[i].style.opacity = 0.5;

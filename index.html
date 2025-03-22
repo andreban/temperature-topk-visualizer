@@ -29,6 +29,12 @@
             gap: 2.5vmin;
         }
 
+        h1 {
+            font-size: 2.5rem;
+            text-align: center;
+            margin: 0;
+        }
+
         #container {
             display: flex;
             height: 300px;
@@ -101,21 +107,17 @@
 
 <body>
     <div>
-        <h1>Roses are red, violets are...</h1>
+        <h1>Temperature and Top-k visulization</h1>
         <fieldset>
             <legend>Parameters</legend>
             <div class="input-group">
                 <label for="prompt">Prompt</label>
                 <select id="prompt">
-                    <option value="Roses are red, violets are...">Roses are red, violets are </option>
-                    <option value="the quick brown fox jumps over the lazy dog">
-                        the quick brown fox jumps over the lazy dog
-                    </option>
-                    <option value="once upon a time, there was a ">once upon a time, there was a </option>
-                    <option value="it was a dark and stormy night, the rain was falling and the wind was howling">it was
-                        a dark and stormy night, the rain was falling and the wind was howling</option>
-                    <option value="the sun was shining, the birds were singing, and the flowers were blooming">the sun
-                        was shining, the birds were singing, and the flowers were blooming</option>
+                    <option selected>Roses are red, violets are...</option>
+                    <option>Once upon a time, there was a...</option>                    
+                    <option>The quick brown fox jumps over the lazy...</option>
+                    <option>It was a dark and stormy night, the rain was falling and the wind was...</option>
+                    <option>The sun was shining, the birds were singing, and the flowers were...</option>
                 </select>
             </div>
             <div class="input-group">
@@ -123,7 +125,7 @@
                 <input id="temperature" type="number" min="0.0" step="0.1" value="1.0" />
 
                 <label for="topk">Top-K</label>
-                <input id="topk" type="number" max="9" min="1" value="6" />
+                <input id="topk" type="number" max="10" min="1" value="6" />
             </div>
         </fieldset>
         <fieldset>
@@ -132,8 +134,8 @@
         </fieldset>
         <details>
             <summary>Understand this visualization</summary>
-            <p>This visualization shows the probabilities for the top 9 most likely next tokens for the prompt
-                <em>"Roses are red, violets are "</em>, and how those probabilities are affected by changing the
+            <p>This visualization shows the probabilities for the top 10 most likely next tokens
+                for the selected prompt, and how those probabilities are affected by changing the
                 <em>temperature</em> and <em>top-k</em> parameters.
             </p>
             <dl>
@@ -156,8 +158,8 @@
                     </ul>
                 </dd>
             </dl>
-            <p>While this visualization only shows the top 9 tokens for the prompt, in reality the large language model
-                will return the likelyhood for thousands of tokens - 262144 in the case of
+            <p>While this visualization only shows the top 10 tokens for the prompt, in reality the large language model
+                will return the likelyhood for thousands of tokens - 262,144 in the case of
                 <a href="https://blog.google/technology/developers/gemma-3/">Gemma 3 1B</a>, the model used to generate
                 the list of tokens.
             </p>
