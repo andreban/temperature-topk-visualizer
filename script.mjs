@@ -6,15 +6,15 @@ const promptSelect = document.getElementById('prompt');
 const DATA = [
     {
         vocabulary: [' blue', ' purple', ' violet', ' vio', ' not', ' Blue', ' green', ' gray', ' grey', ' black'],	
-        logits: [23.625, 19.125, 18, 17.625, 17.625, 17.375, 17.375, 16.75, 16.375, 16.375,]
+        logits: [23.625, 19.125, 18, 17.625, 17.625, 17.376, 17.375, 16.75, 16.376, 16.375,]
     },
     {
         vocabulary: [' little', ' girl', ' young', ' man', ' boy', ' beautiful', ' small', ' king', ' woman', ' princess'],
-        logits: [20, 19.375, 19.375, 19.25, 18.875, 18.5, 18.375, 18.125, 18, 17.75]
+        logits: [20, 19.376, 19.375, 19.25, 18.875, 18.5, 18.375, 18.125, 18, 17.75]
     },
     {
         vocabulary: [' dog', ' dogs', ' lazy', ' brown', ' cat', ' old', ',', ' puppy', '', ' snake',],
-        logits: [23.375, 18.375, 18.125, 18, 17.375, 17.375, 17, 17, 16.625, 16.5]
+        logits: [23.375, 18.375, 18.125, 18, 17.376, 17.375, 17.001, 17, 16.625, 16.5]
     },
     {
         vocabulary: [' howling', ' blowing', ' whipping', ' whistling', ' roaring', ' strong', ' gust', ' picking', ' raging', ' screaming'],
