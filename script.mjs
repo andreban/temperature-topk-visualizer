@@ -1,8 +1,13 @@
 
 const topKInput = document.getElementById('topk');
 const temperatureInput = document.getElementById('temperature');
-const topPInput = document.getElementById('topp'); // Added Top-P input
+const topPInput = document.getElementById('topp');
 const promptSelect = document.getElementById('prompt');
+
+// Get references to value display spans
+const temperatureValueSpan = document.getElementById('temperature-value');
+const topkValueSpan = document.getElementById('topk-value');
+const toppValueSpan = document.getElementById('topp-value');
 
 const DATA = [
     {
@@ -30,10 +35,23 @@ const DATA = [
 const barDivs = [];
 const labelDivs = [];
 
-topKInput.addEventListener('change', updateBars);
-temperatureInput.addEventListener('change', updateBars);
-topPInput.addEventListener('change', updateBars); // Added listener for Top-P
-promptSelect.addEventListener('change', updateBars);
+// Update visualization on 'input' for real-time feedback
+topKInput.addEventListener('input', updateBars);
+temperatureInput.addEventListener('input', updateBars);
+topPInput.addEventListener('input', updateBars);
+promptSelect.addEventListener('change', updateBars); // Keep 'change' for select
+
+// Update value spans on 'input'
+temperatureInput.addEventListener('input', () => {
+    temperatureValueSpan.textContent = parseFloat(temperatureInput.value).toFixed(1);
+});
+topKInput.addEventListener('input', () => {
+    topkValueSpan.textContent = topKInput.value;
+});
+topPInput.addEventListener('input', () => {
+    toppValueSpan.textContent = parseFloat(topPInput.value).toFixed(2);
+});
+
 
 const container = document.getElementById('container');
 for (let item of DATA[0].vocabulary) {
