@@ -1,6 +1,7 @@
 
 const topKInput = document.getElementById('topk');
 const temperatureInput = document.getElementById('temperature');
+const topPInput = document.getElementById('topp'); // Added Top-P input
 const promptSelect = document.getElementById('prompt');
 
 const DATA = [
@@ -31,6 +32,7 @@ const labelDivs = [];
 
 topKInput.addEventListener('change', updateBars);
 temperatureInput.addEventListener('change', updateBars);
+topPInput.addEventListener('change', updateBars); // Added listener for Top-P
 promptSelect.addEventListener('change', updateBars);
 
 const container = document.getElementById('container');
@@ -61,19 +63,31 @@ function updateBars() {
     const logits = [...DATA[index].logits];
     const topk = Number.parseInt(topKInput.value);
     const temperature = Number.parseFloat(temperatureInput.value);
+    const topp = Number.parseFloat(topPInput.value); // Read Top-P value
 
-    const topKLogits = topK(logits, topk);
-    const minValue = topKLogits.at(0);
-    const filteredLogits = logits.map(logit => {
-        if (logit <= minValue) {
-            return Number.NEGATIVE_INFINITY;
-        } else {
-            return logit;
-        }
-    })
-    const probabilities = softmaxWithTemperature(filteredLogits, temperature);
+    // Apply temperature scaling first
+    const scaledLogits = logits.map(logit => logit / temperature);
+
+    // Get indices to filter by Top-K
+    const topKIndices = getTopKIndices(scaledLogits, topk);
+
+    // Get indices to filter by Top-P
+    const topPIndices = getTopPIndices(scaledLogits, topp);
+
+    // Combine filters: keep indices present in BOTH sets
+    const combinedIndices = new Set(topKIndices.filter(index => topPIndices.includes(index)));
+
+    // Create filtered logits based on combined indices
+    const filteredLogits = scaledLogits.map((logit, index) => {
+        return combinedIndices.has(index) ? logit : Number.NEGATIVE_INFINITY;
+    });
+
+    // Calculate final probabilities using softmax (temperature already applied)
+    const probabilities = softmax(filteredLogits);
+
+    // Update visualization
     for (let i = 0; i < probabilities.length; i++) {
-        if (filteredLogits[i] === Number.NEGATIVE_INFINITY) {
+        if (!combinedIndices.has(i)) { // Check if index was filtered out
             labelDivs[i].style.opacity = 0.5;
         } else {
             labelDivs[i].style.opacity = 1;
@@ -97,12 +111,50 @@ function softmax(logits) {
 }
 
 function softmaxWithTemperature(logits, temperature) {
-    const scaledLogits = logits.map(logit => logit / temperature)
+    const scaledLogits = logits.map(logit => logit / temperature);
     return softmax(scaledLogits);
 }
 
-function topK(logits, k) {
-    const sortedLogits = [...logits];
-    sortedLogits.sort((a, b) => b - a);
-    return sortedLogits.slice(k);
+// Helper function to get indices of top K elements
+function getTopKIndices(logits, k) {
+    const indices = logits.map((_, i) => i);
+    indices.sort((a, b) => logits[b] - logits[a]);
+    return indices.slice(0, k);
+}
+
+// Helper function to get indices for Top-P filtering
+function getTopPIndices(logits, p) {
+    // Calculate probabilities first (using already scaled logits)
+    const probabilities = softmax(logits);
+
+    // Pair probabilities with original indices and sort descending
+    const indexedProbabilities = probabilities
+        .map((prob, index) => ({ prob, index }))
+        .filter(item => item.prob > 0) // Filter out zero probabilities
+        .sort((a, b) => b.prob - a.prob);
+
+    let cumulativeProb = 0;
+    const topPIndices = [];
+
+    for (const item of indexedProbabilities) {
+        if (cumulativeProb < p) {
+            topPIndices.push(item.index);
+            cumulativeProb += item.prob;
+        } else {
+            // Optimization: if the next probability is the same as the last one added,
+            // include it as well to handle ties fairly.
+            if (item.prob === indexedProbabilities[topPIndices.length - 1]?.prob) {
+                 topPIndices.push(item.index);
+                 // No need to add to cumulativeProb again if we are already >= p
+            } else {
+                break; // Stop once cumulative probability exceeds p
+            }
+        }
+    }
+    // Ensure at least one token is always selected if p > 0
+    if (topPIndices.length === 0 && p > 0 && indexedProbabilities.length > 0) {
+        return [indexedProbabilities[0].index];
+    }
+
+    return topPIndices;
 }

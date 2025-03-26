@@ -107,7 +107,7 @@
 
 <body>
     <div>
-        <h1>Temperature and Top-k visualization</h1>
+        <h1>Temperature, Top-k and Top-P visualization</h1>
         <fieldset>
             <legend>Parameters</legend>
             <div class="input-group">
@@ -126,6 +126,9 @@
 
                 <label for="topk">Top-K</label>
                 <input id="topk" type="number" max="10" min="1" value="6" />
+
+                <label for="topp">Top-P</label>
+                <input id="topp" type="number" min="0.0" max="1.0" step="0.05" value="1.0" />
             </div>
         </fieldset>
         <fieldset>
@@ -153,7 +156,9 @@
                         </li>
                         <li><strong>Top-K</strong>: The top-k parameter controls the number of tokens to consider when
                             generating the probabilities for the next token to be selected. A top-k of 1 will always
-                            return the most likely token, while a top-k of 9 will consider the top 9 most likely tokens.
+                            return the most likely token, while a top-k of 10 will consider all 10 tokens shown here.
+                        </li>
+                        <li><strong>Top-P (Nucleus Sampling)</strong>: The top-p parameter filters the vocabulary considered for the next token based on cumulative probability. It selects the smallest set of the most probable tokens whose cumulative probability exceeds the threshold `p`. For example, if `p=0.9`, it keeps adding the most likely tokens until their combined probability reaches 0.9, and then discards the rest. A `p` of 1.0 considers all tokens. When used with Top-K, only tokens that satisfy *both* conditions are kept.
                         </li>
                     </ul>
                 </dd>
